@@ -1,6 +1,8 @@
+import 'package:beanfast_admin/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:dio/dio.dart';
+
+import 'views/screens/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,199 +14,119 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(title: 'Flutter Demo', getPages: [
-      GetPage(
-        name: '/',
-        page: () => LoginForm(),
-        binding: LoginFormBindingController(),
-      ),
-      GetPage(name: '/', page: () => ImageSlider()),
-    ]
-        // home: LoginForm(),
-        );
-  }
-}
-
-class LoginForm extends StatefulWidget {
-  LoginForm({Key? key}) : super(key: key);
-
-  @override
-  _LoginFormState createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isPasswordHidden = true; // Add this line
-
-  void _togglePasswordVisibility() {
-    // Add this method
-    setState(() {
-      _isPasswordHidden = !_isPasswordHidden;
-    });
-  }
-
-  @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final Controller c = Get.put(Controller());
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  if (value.length < 3) {
-                    return 'Username must be at least 3 characters long';
-                  }
-                  return null;
-                },
-                onChanged: (value) =>
-                    Get.find<Controller>()._username.value = value,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    // Add this line
-                    icon: Icon(
-                      _isPasswordHidden
-                          ? Icons.visibility
-                          : Icons.visibility_off, // Change this line
-                    ),
-                    onPressed: _togglePasswordVisibility, // And this line
-                  ),
-                ),
-                obscureText: _isPasswordHidden,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 8) {
-                    return 'Password must be at least 8 characters long';
-                  }
-                  return null;
-                },
-                onChanged: (value) =>
-                    Get.find<Controller>()._password.value = value,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Processing Data')),
-                    );
-                    Get.toNamed('/');
-                  }
-                },
-                child: Text('Submit'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Get.find<Controller>().getData();
-                },
-                child: Text('Call api'),
-              ),
-            ],
-          ),
+    final AuthController authController = Get.put(AuthController());
+    Get.put(AuthController());
+    return GetMaterialApp(
+      title: 'Flutter Demo',
+      getPages: [
+        GetPage(
+          name: '/',
+          page: () {
+            return Get.find<AuthController>().logged.value
+                ? const Home()
+                : Login();
+          },
+          binding: LoginBindingController(),
+        ),
+        // GetPage(name: '/', page: () => ImageSlider()),
+      ],
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('My Widget'),
+        ),
+        body: 
+        StreamBuilder(
+          stream: authController.authStateChanges,
+          builder: (context, snapshot) {
+            // authController.setAuthState(AuthState.authenticated);
+            // print(Get.find<AuthController>().authState.value); // authenticated
+            print("object");
+            // print(Get.find<AuthController>().authState.value); // authenticated
+            print(snapshot.connectionState);
+            print(snapshot.hasData);
+            Future.delayed(const Duration(seconds: 10), () {
+              print('delay: ${snapshot.connectionState}');
+            });
+            if (snapshot.connectionState == ConnectionState.active) {
+              switch (snapshot.data) {
+                case AuthState.authenticated:
+                  print('AuthState.authenticated');
+                  return const Home();
+                case AuthState.unauthenticated:
+                  print('AuthState.unauthenticated');
+                  return const UnknownScreen();
+                case AuthState.unknown:
+                  print('AuthState.unknown');
+                  return Login();
+                default:
+                  return const Text("Lỗi xác định trạng thái");
+              }
+            } else if (snapshot.hasData) {
+              print('snapshot.hasData');
+              switch (snapshot.data) {
+                case AuthState.authenticated:
+                  print('AuthState.authenticated');
+                  return const Home();
+                case AuthState.unauthenticated:
+                  print('AuthState.unauthenticated');
+                  return const UnknownScreen();
+                case AuthState.unknown:
+                  print('AuthState.unknown');
+                  return Login();
+                default:
+                  return const Text("Lỗi xác định trạng thái");
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Simulate an authentication state change
+            authController.changeAuthState(AuthState.authenticated);
+            
+          },
+          child: const Icon(Icons.login),
         ),
       ),
     );
   }
 }
 
-class ImageSlider extends StatelessWidget {
-  final controller = PageController();
-
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image Slider'),
-      ),
-      body: Center(
-        child: PageView(
-          controller: controller,
-          children: [
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return GestureDetector(
-                      onTap: () => Get.back(),
-                      child: FractionallySizedBox(
-                        child: Container(
-                          child: PageView(
-                            children: [
-                              Image.network(
-                                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg'),
-                              Image.network(
-                                  'https://imgupscaler.com/images/samples/animal-after.webp'),
-                              Image.network(
-                                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Image.network(
-                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg'),
-            ),
-            // Add more images as needed
-          ],
-        ),
+        title: const Text('SplashScreen'),
       ),
     );
   }
 }
 
-class Controller extends GetxController {
-  var count = 0.obs;
-  increment() => count++;
-
-  var _username = "".obs;
-  var _password = "".obs;
-
-  final dio = Dio();
-  void getData() async {
-    final response = await dio
-        .get('https://64880ed40e2469c038fcdaf0.mockapi.io/api/v1/user/1');
-    print(response.data.toString());
+class UnknownScreen extends StatelessWidget {
+  const UnknownScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Trạng thái không xác định'),
+      ),
+    );
   }
 }
 
-class LoginFormBindingController extends Bindings {
+class Home extends StatelessWidget {
+  const Home({super.key});
+
   @override
-  void dependencies() {
-    Get.lazyPut<Controller>(() => Controller());
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+    );
   }
 }

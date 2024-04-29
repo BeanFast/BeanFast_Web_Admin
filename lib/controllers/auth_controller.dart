@@ -1,106 +1,85 @@
-import 'package:beanfast_admin/main.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
-import '../models/user.dart';
+import '/services/auth_service.dart';
+import '/utils/logger.dart';
+import '/enums/auth_state_enum.dart';
 
-enum AuthState {
-  authenticated,
-  unauthenticated,
-  unknown,
-}
+class AuthController extends GetxController with CacheManager {
+  Rx<AuthState> authState = AuthState.unauthenticated.obs;
+  final isPasswordHidden = true.obs;
 
-class AuthController extends GetxController {
-  // late Rx<Account?> account;
-  final RxBool logged = false.obs;
-
-  final usernameController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  final _authState = Rx<AuthState>(AuthState.unknown);
-
-  Stream<AuthState> get authStateChanges => _authState.stream;
-// //---------------------
-//   Rx<AuthState> authState = AuthState.unauthenticated.obs;
-
-//   // void setAuthState(AuthState newState) {
-//   //   authState.value = newState;
-//   //   print('setAuth ${authState.value}');
-//   // }
-// //-----------------------
-
   void changeAuthState(AuthState newState) {
-    _authState.value = newState;
+    authState.value = newState;
   }
 
-  var count = 0.obs;
-  increment() => count++;
-
-  final _username = "".obs;
-  final _password = "".obs;
-
-  void checkValue() {
-    print(_username.value);
-    print(_password.value);
+  void checkLoginStatus() {
+    final String? token = getToken();
+    logger.e('token - ${token != null}');
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      final expiryTimestamp = decodedToken["exp"];
+      final currentTime = DateTime.now().millisecondsSinceEpoch;
+      if (expiryTimestamp < currentTime) {
+        changeAuthState(AuthState.authenticated);
+        return;
+      }
+    }
+    logOut();
   }
 
-  // @override
-  // void onReady() {
-  //   super.onReady();
-  //   firebaseUser = Rx<User?>(auth.currentUser);
-  //   firebaseUser.bindStream(auth.userChanges());
+  Future login() async {
+    emailController.text = 'admin01.beanfast@gmail.com';
+    passwordController.text = '12345678';
 
-  //   ever(firebaseUser, _setInitialScreen);
-  // }
+    if (!formKey.currentState!.validate()) {
+      Get.snackbar('Thất bại', 'Thông tin không hợp lệ');
+      return;
+    }
+    try {
+      var response = await AuthService()
+          .login(emailController.text, passwordController.text);
+      if (response.statusCode == 200) {
+        changeAuthState(AuthState.authenticated);
+        await saveToken(response.data['data']['accessToken']); //Token is cached
+      }
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 400) {
+        Get.snackbar('Thất bại', 'Tài khoản hoặc mật khẩu không đúng');
+      }
+    }
+  }
 
-  // _setInitialScreen(User? user) {
-  //   if (user != null) {
-  //     // user is logged in
-  //     Get.offAll(() => const Home());
-  //   } else {
-  //     // user is null as in user is not available or not logged in
-  //     Get.offAll(() => Login());
-  //   }
-  // }
-
-  // void register(String email, String password) async {
-  //   try {
-  //     await auth.createUserWithEmailAndPassword(
-  //         email: email, password: password);
-  //   } on FirebaseAuthException catch (e) {
-  //     // this is solely for the Firebase Auth Exception
-  //     // for example : password did not match
-  //     print(e.message);
-  //     // Get.snackbar("Error", e.message!);
-  //     Get.snackbar(
-  //       "Error",
-  //       e.message!,
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   } catch (e) {
-  //     // this is temporary. you can handle different kinds of activities
-  //     //such as dialogue to indicate what's wrong
-  //     print(e.toString());
-  //   }
-  // }
-
-  // void login(String email, String password) async {
-  //   try {
-  //     await auth.signInWithEmailAndPassword(email: email, password: password);
-  //   } on FirebaseAuthException catch (e) {
-  //     // this is solely for the Firebase Auth Exception
-  //     // for example : password did not match
-  //     print(e.message);
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-  // void signOut() {
-  //   try {
-  //     auth.signOut();
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+  void logOut() {
+    changeAuthState(AuthState.unauthenticated);
+    removeToken();
+  }
 }
+
+mixin CacheManager {
+  Future<bool> saveToken(String? token) async {
+    final box = GetStorage();
+    await box.write(CacheManagerKey.ADMINTOKEN.toString(), token);
+    return true;
+  }
+
+  String? getToken() {
+    final box = GetStorage();
+    return box.read(CacheManagerKey.ADMINTOKEN.toString());
+  }
+
+  Future<void> removeToken() async {
+    final box = GetStorage();
+    await box.remove(CacheManagerKey.ADMINTOKEN.toString());
+  }
+}
+
+// ignore: constant_identifier_names
+enum CacheManagerKey { ADMINTOKEN }

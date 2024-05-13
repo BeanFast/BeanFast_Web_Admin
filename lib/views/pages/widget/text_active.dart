@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TextActive extends StatelessWidget {
   final int status;
@@ -8,11 +9,11 @@ class TextActive extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (status) {
       case 0:
-        return const Text('Đã khóa', style: TextStyle(color: Colors.red,));
+        return  Text('Đã khóa', style: Get.textTheme.bodyMedium!.copyWith(color: Colors.red));
       case 1:
-        return const Text('Đang hoạt động', style: TextStyle(color: Colors.green,));
+        return  Text('Đang hoạt động', style: Get.textTheme.bodyMedium!.copyWith(color: Colors.green));
       default:
-        return const Text('Đang hoạt động');
+        return  Text('Đang hoạt động',style: Get.textTheme.bodyMedium!.copyWith(color: Colors.green));
     }
   }
 }

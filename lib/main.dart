@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(
           name: '/',
-          page: () => SplashView(),
+          page: () => const SplashView(),
           binding: AuthBindingController(),
           // transition: Transition.fade,
         ),

@@ -1,5 +1,3 @@
-import 'package:beanfast_admin/enums/status_enum.dart';
-import 'package:beanfast_admin/models/role.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +6,12 @@ import 'package:get/get.dart';
 import '/views/pages/kitchen_manager_page.dart';
 import '/contains/contain.dart';
 import '/services/user_service.dart';
+import '/enums/status_enum.dart';
+import '/models/role.dart';
 import '/models/user.dart';
-import 'data_table_controller.dart';
+import 'paginated_data_table_controller.dart';
 
-class KitchenManagerController extends DataTableController<User> {
+class KitchenManagerController extends PaginatedDataTableController<User> {
   //Form
   final GlobalKey<FormState> formCreateKey = GlobalKey<FormState>();
   final TextEditingController fullName = TextEditingController();
@@ -26,7 +26,7 @@ class KitchenManagerController extends DataTableController<User> {
       await UserService().changeActive(id, isActive);
       Get.back();
       Get.snackbar('Thành công', '');
-      await refreshData();
+      await fetchData();
     } on DioException catch (e) {
       Get.snackbar('Lỗi', e.response!.data['message']);
     }
@@ -68,7 +68,7 @@ class KitchenManagerController extends DataTableController<User> {
         await UserService().create(model);
         Get.back();
         Get.snackbar('Thành công', '');
-        refreshData();
+        await fetchData();
       } on DioException catch (e) {
         Get.snackbar('Lỗi', e.response!.data['title']);
       }
@@ -77,28 +77,17 @@ class KitchenManagerController extends DataTableController<User> {
     }
   }
 
-  @override
   void search(String value) {
     if (value.isEmpty) {
-      setDataTable(initModelList);
+      setDataTable(dataList);
     } else {
-      currentModelList = initModelList
+      var list = dataList
           .where((e) =>
               e.code!.toLowerCase().contains(value.toLowerCase()) ||
               e.fullName!.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      setDataTable(currentModelList);
+      setDataTable(list);
     }
-  }
-
-  void sortByName(int index) {
-    columnIndex.value = index;
-    columnAscending.value = !columnAscending.value;
-    currentModelList.sort((a, b) => a.fullName!.compareTo(b.fullName!));
-    if (!columnAscending.value) {
-      currentModelList = currentModelList.reversed.toList();
-    }
-    setDataTable(currentModelList);
   }
 
   Future<void> pickImage() async {
@@ -110,27 +99,21 @@ class KitchenManagerController extends DataTableController<User> {
   }
 
   @override
-  Future getData(list) async {
-    try {
-      final apiDataList = await UserService().getByRoleId(selectedRole!.id);
-      for (var e in apiDataList) {
-        initModelList.add(e);
-      }
-    } on DioException catch (e) {
-      Get.snackbar('Lỗi', e.response!.data['message']);
-    }
-  }
-
-  @override
   void setDataTable(List<User> list) {
     rows.value = list.map((dataMap) {
-      return const KitchenManagerView().setRow(list.indexOf(dataMap), dataMap);
+      return const KitchenManagerView().setRow(dataMap);
     }).toList();
   }
 
   @override
-  Future loadPage(int page) {
-    // TODO: implement loadPage
-    throw UnimplementedError();
+  Future fetchData() async {
+    try {
+      final data = await UserService().getByRoleId(selectedRole!.id);
+      data.sort((a, b) => b.fullName!.compareTo(a.fullName!));
+      dataList = data;
+      setDataTable(dataList);
+    } catch (e) {
+      throw Exception();
+    }
   }
 }

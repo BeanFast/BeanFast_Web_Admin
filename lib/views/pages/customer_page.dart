@@ -7,8 +7,8 @@ import '/enums/status_enum.dart';
 import '/models/user.dart';
 import '/controllers/customer_controller.dart';
 import '/views/pages/loading_page.dart';
-import '/views/pages/widget/data_table_page.dart';
 import '/views/pages/widget/text_data_table_widget.dart';
+import 'widget/paginated_datatable_widget.dart';
 import 'widget/text_active.dart';
 
 class CustomerView extends GetView<CustomerController> {
@@ -19,45 +19,48 @@ class CustomerView extends GetView<CustomerController> {
     Get.put(CustomerController());
     changeRole(RoleState.customer.code);
     return LoadingView(
-      future: controller.refreshData,
-      child: Obx(
-        () => DataTableView(
-          title: 'Quản lý khách hàng',
-          refreshData: controller.refreshData,
-          loadPage: (page) => controller.loadPage(page),
-          search: (value) => controller.search(value),
-          sortColumnIndex: controller.columnIndex.value,
-          sortAscending: controller.columnAscending.value,
-          columns: <DataColumn>[
-            const DataColumn(
-              label: Text('Stt'),
+      future: controller.fetchData,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: TextField(
+                    onChanged: (value) => controller.search(value),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 10, right: 10),
+                      labelText: 'Tìm kiếm',
+                    ),
+                    style: Get.theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
             ),
-            const DataColumn(
-              label: Text('Code'),
+            SizedBox(
+              height: Get.height * 0.8,
+              child: const PaginatedDataTableView<CustomerController>(
+                title: 'Danh sách khách hàng',
+                columns: <DataColumn>[
+                  DataColumn(label: Text('Code')),
+                  DataColumn(label: Text('Hình ảnh')),
+                  DataColumn(label: Text('Tên')),
+                  DataColumn(label: Text('Số điện thoại')),
+                  DataColumn(label: Text('Trạng thái')),
+                  DataColumn(label: Text(' ')),
+                ],
+              ),
             ),
-            const DataColumn(label: Text('Hình ảnh')),
-            DataColumn(
-                label: const Text('Tên'),
-                onSort: (index, ascending) => controller.sortByName(index)),
-            const DataColumn(
-              label: Text('Số điện thoại'),
-            ),
-            const DataColumn(
-              label: Text('Trạng thái'),
-            ),
-            const DataColumn(label: Text(' ')),
           ],
-          // ignore: invalid_use_of_protected_member
-          rows: controller.rows.value,
         ),
       ),
     );
   }
 
-  DataRow setRow(int index, User user) {
+  DataRow setRow(User user) {
     return DataRow(
       cells: [
-        DataCell(Text((index + 1).toString())),
         DataCell(Text(user.code.toString())),
         DataCell(
           SizedBox(

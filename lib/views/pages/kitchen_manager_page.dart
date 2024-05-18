@@ -7,9 +7,8 @@ import '/contains/contain.dart';
 import '/enums/status_enum.dart';
 import '/models/user.dart';
 import '/views/pages/loading_page.dart';
-import '/views/pages/widget/data_table_page.dart';
 import '/views/pages/widget/button_data_table.dart';
-import '/views/pages/widget/text_data_table_widget.dart';
+import 'widget/paginated_datatable_widget.dart';
 import 'widget/text_active.dart';
 
 class KitchenManagerView extends GetView<KitchenManagerController> {
@@ -20,51 +19,53 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
     Get.put(KitchenManagerController());
     changeRole(RoleState.kitchenManager.code);
     return LoadingView(
-      future: controller.refreshData,
-      child: Obx(
-        () => DataTableView(
-          title: 'Quản lý người giao hàng',
-          header: CreateButtonDataTable(
-            onPressed: showDialog,
-          ),
-          refreshData: controller.refreshData,
-          loadPage: (page) => controller.loadPage(page),
-          search: (value) => controller.search(value),
-          sortColumnIndex: controller.columnIndex.value,
-          sortAscending: controller.columnAscending.value,
-          columns: <DataColumn>[
-            const DataColumn(
-              label: Text('Stt'),
+      future: controller.fetchData,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: TextField(
+                    onChanged: (value) => controller.search(value),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 10, right: 10),
+                      labelText: 'Tìm kiếm',
+                    ),
+                    style: Get.theme.textTheme.bodyMedium,
+                  ),
+                ),
+                const Spacer(),
+                CreateButtonDataTable(
+                  onPressed: showDialog,
+                ),
+              ],
             ),
-            const DataColumn(
-              label: Text('Code'),
+            SizedBox(
+              height: Get.height * 0.8,
+              child: const PaginatedDataTableView<KitchenManagerController>(
+                title: 'Danh sách quản lý bếp',
+                columns: <DataColumn>[
+                  DataColumn(label: Text('Code')),
+                  DataColumn(label: Text('Hình ảnh')),
+                  DataColumn(label: Text('Họ và tên')),
+                  DataColumn(label: Text('Email')),
+                  DataColumn(label: Text('Số điện thoại')),
+                  DataColumn(label: Text('Trạng thái')),
+                  DataColumn(label: Text(' ')),
+                ],
+              ),
             ),
-            const DataColumn(label: Text('Hình ảnh')),
-            DataColumn(
-                label: const Text('Họ và tên'),
-                onSort: (index, ascending) => controller.sortByName(index)),
-            const DataColumn(
-              label: Text('Email'),
-            ),
-            const DataColumn(
-              label: Text('Số điện thoại'),
-            ),
-            const DataColumn(
-              label: Text('Trạng thái'),
-            ),
-            const DataColumn(label: Text(' ')),
           ],
-          // ignore: invalid_use_of_protected_member
-          rows: controller.rows.value,
         ),
       ),
     );
   }
 
-  DataRow setRow(int index, User user) {
+  DataRow setRow(User user) {
     return DataRow(
       cells: [
-        DataCell(Text((index + 1).toString())),
         DataCell(Text(user.code.toString())),
         DataCell(
           SizedBox(
@@ -76,13 +77,7 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
             ),
           ),
         ),
-        DataCell(
-          TextDataTable(
-            data: user.fullName.toString(),
-            maxLines: 2,
-            width: 200,
-          ),
-        ),
+        DataCell(Text(user.fullName.toString())),
         DataCell(Text(user.email.toString())),
         DataCell(Text(user.phone.toString())),
         DataCell(TextActive(status: user.status!)),

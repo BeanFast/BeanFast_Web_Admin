@@ -7,17 +7,12 @@ import 'home_page.dart';
 import 'login_page.dart';
 import '/utils/logger.dart';
 
-class SplashView extends StatelessWidget {
-  SplashView({super.key});
-
-  final AuthController _authController = Get.find();
+class SplashView extends GetView<AuthController> {
+  const SplashView({super.key});
 
   Future<void> initializeSettings() async {
-    print('initializeSettings');
-    _authController.checkLoginStatus();
-
-    //Simulate other services for 3 seconds
-    // await Future.delayed(Duration(seconds: 3));
+    logger.w('initializeSettings');
+    controller.checkLoginStatus();
   }
 
   @override
@@ -31,19 +26,18 @@ class SplashView extends StatelessWidget {
           if (snapshot.hasError) {
             // return ErrorView(errorMessage: snapshot.error.toString());
             logger.e('snapshot.hasError: ${snapshot.error.toString()}');
-            return LoginView();
+            return const LoginView();
           } else {
             return Obx(() {
-              switch (_authController.authState.value) {
+              switch (controller.authState.value) {
                 case AuthState.authenticated:
-                  return HomeView(); // get token -> get User
-                // return const HomeView(); // get token -> get User
+                  return const HomeView();
                 case AuthState.unauthenticated:
-                  return LoginView();
+                  return const LoginView();
                 default:
                   logger.e(
                       'Lỗi xác thực đăng nhập: ${snapshot.error.toString()}');
-                  return LoginView();
+                  return const LoginView();
                 // return const ErrorView(
                 //     errorMessage: 'Lỗi xác thực đăng nhập'); //
               }

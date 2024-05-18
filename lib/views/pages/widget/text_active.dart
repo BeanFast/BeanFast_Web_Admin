@@ -8,9 +8,12 @@ class TextActive extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (status) {
       case 0:
-        return const Text('Đã khóa', style: TextStyle(color: Colors.red,));
+        return const Text('Đã khóa', style: TextStyle(color: Colors.red));
       case 1:
-        return const Text('Đang hoạt động', style: TextStyle(color: Colors.green,));
+        return const Text('Đang hoạt động',
+            style: TextStyle(color: Colors.green));
+      case 2:
+        return const Text('Chưa xác thực');
       default:
         return const Text('Đang hoạt động');
     }

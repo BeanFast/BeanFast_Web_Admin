@@ -111,7 +111,7 @@ class LoginView extends GetView<AuthController> {
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                            borderRadius: BorderRadius.circular(12),
                             side: const BorderSide(color: Colors.grey),
                           ),
                         ),

@@ -8,7 +8,6 @@ import '/enums/status_enum.dart';
 import '/models/user.dart';
 import '/views/pages/loading_page.dart';
 import '/views/pages/widget/button_data_table.dart';
-import '/views/pages/widget/text_data_table_widget.dart';
 import 'widget/paginated_datatable_widget.dart';
 import 'widget/text_active.dart';
 
@@ -141,14 +140,17 @@ class DelivererView extends GetView<DelivererController> {
   void showDialog() {
     Get.dialog(
       ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: Get.width),
+        constraints: BoxConstraints(maxWidth: Get.width ),
         child: AlertDialog(
-          title: const Text('Thông tin người giao hàng'),
+          title: Text(
+            'Thông tin tài khoản giao hàng',
+            style: Get.textTheme.titleMedium,
+          ),
           content: Form(
             key: controller.formCreateKey,
             child: SingleChildScrollView(
               child: SizedBox(
-                width: Get.width,
+                width: Get.width * 0.8,
                 child: ListBody(
                   children: [
                     Obx(
@@ -156,7 +158,10 @@ class DelivererView extends GetView<DelivererController> {
                         padding: const EdgeInsets.only(
                             left: 5.0, right: 5.0, bottom: 10.0, top: 10.0),
                         child: controller.selectedImageFile.value == null
-                            ? const Text('Chưa có ảnh')
+                            ? Text(
+                                'Chưa có ảnh',
+                                style: Get.textTheme.bodyMedium,
+                              )
                             : Image.memory(
                                 controller.selectedImageFile.value!.files.single
                                     .bytes!,
@@ -173,12 +178,19 @@ class DelivererView extends GetView<DelivererController> {
                         child: SizedBox(
                           width: 140,
                           height: 40,
-                          child: FloatingActionButton.extended(
-                            icon: const Icon(Icons.add),
-                            label: const Text('Thay đổi ảnh'),
+                          child: TextButton(
                             onPressed: () async {
                               await controller.pickImage();
                             },
+                            child: Row(
+                              children: [
+                                const Icon(Icons.add),
+                                Text(
+                                  'Thay đổi ảnh',
+                                  style: Get.textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -305,12 +317,17 @@ class DelivererView extends GetView<DelivererController> {
             ),
           ),
           actions: <Widget>[
-            FloatingActionButton.extended(
-              icon: const Icon(Icons.add),
-              label: const Text('Lưu'),
+            TextButton(
               onPressed: () async {
                 await controller.submitForm();
               },
+              child:  Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Iconsax.add, size: 20,),
+                  Text('Lưu', style: Get.textTheme.bodyMedium),
+                ],
+              ),
             ),
           ],
         ),

@@ -13,7 +13,103 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin page'),
+        title: Row(
+          children: [
+            const Text('BeanFast Admin'),
+            const Spacer(),
+            PopupMenuButton<String>(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              icon: const Icon(Icons.settings),
+              onSelected: (String result) {
+                if (result == 'Tài khoản') {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Thông tin tài khoản'),
+                        content: const SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text('Email tài khoản:'),
+                              Text('Thông tin 1:'),
+                              Text('Thông tin 2:'),
+                              Text('Thông tin 3:'),
+                              Text('Thông tin 4:'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Đóng'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else if (result == 'Đăng xuất') {
+                  // Handle logout
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title:
+                            Text('Xác nhận', style: Get.textTheme.titleMedium),
+                        content: Text('Bạn có chắc chắn muốn đăng xuất không?',
+                            style: Get.textTheme.bodyMedium),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Hủy'),
+                            onPressed: () {
+                              Navigator.of(context).pop(
+                                  false); // Returns false when Cancel is clicked
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Đồng ý'),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(true); // Returns true when OK is clicked
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'Tài khoản',
+                  child: Row(
+                    children: [
+                      Icon(Icons.account_circle),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text('Tài khoản'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Đăng xuất',
+                  child: Row(
+                    children: [
+                      Icon(Icons.exit_to_app),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text('Đăng xuất'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -38,9 +134,11 @@ class HomeView extends GetView<HomeController> {
       () => Row(
         children: [
           NavigationRail(
+            backgroundColor: Colors.white,
+            elevation: 2,
             minWidth: 64,
-            // selectedIndex: widget.currentIndex,
             selectedIndex: selectedMenuIndex.value,
+            selectedIconTheme: const IconThemeData(color: Colors.blue),
             destinations: [
               ...controller.menuItems.map(
                 (e) => NavigationRailDestination(
@@ -71,25 +169,23 @@ class HomeView extends GetView<HomeController> {
       () => Row(
         children: [
           Drawer(
+            elevation: 2,
+            surfaceTintColor: Colors.white,
+            backgroundColor: Colors.white,
             width: 200,
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const DrawerHeader(
-                    child: Center(
-                      child: Text('Menu'),
-                    ),
-                  ),
                   for (int i = 0; i < controller.menuItems.length; i++)
                     ListTile(
                       leading: Icon(controller.menuItems[i].icon),
                       title: Text(controller.menuItems[i].title),
                       selected: selectedMenuIndex.value == i,
+                      selectedTileColor:
+                          const Color.fromARGB(255, 122, 184, 235),
                       onTap: () {
                         selectedMenuIndex.value = i;
                         controller.changePage(i);
-                        // controller.selectedContent.value =
-                        //     controller.setSelectedContent(i);
                       },
                     ),
                 ],

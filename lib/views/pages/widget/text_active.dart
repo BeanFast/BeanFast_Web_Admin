@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TextActive extends StatelessWidget {
   final int status;
@@ -15,7 +16,7 @@ class TextActive extends StatelessWidget {
       case 2:
         return const Text('Chưa xác thực');
       default:
-        return const Text('Đang hoạt động');
+        return  Text('Đang hoạt động',style: Get.textTheme.bodyMedium!.copyWith(color: Colors.green));
     }
   }
 }

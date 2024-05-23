@@ -20,24 +20,27 @@ class KitchenView extends GetView<KitchenController> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: TextField(
-                    onChanged: (value) => controller.search(value),
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 10, right: 10),
-                      labelText: 'Tìm kiếm',
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      onChanged: (value) => controller.search(value),
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 10, right: 10),
+                        labelText: 'Tìm kiếm',
+                      ),
+                      style: Get.theme.textTheme.bodyMedium,
                     ),
-                    style: Get.theme.textTheme.bodyMedium,
                   ),
-                ),
-                const Spacer(),
-                CreateButtonDataTable(
-                  onPressed: showCreateKitchenDialog,
-                ),
-              ],
+                  const Spacer(),
+                  CreateButtonDataTable(
+                    onPressed: showCreateKitchenDialog,
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: Get.height * 0.8,

@@ -51,7 +51,7 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
                   DataColumn(label: Text('Hình ảnh')),
                   DataColumn(label: Text('Họ và tên')),
                   DataColumn(label: Text('Email')),
-                  DataColumn(label: Text('Số điện thoại')),
+                  // DataColumn(label: Text('Số điện thoại')),
                   DataColumn(label: Text('Trạng thái')),
                   DataColumn(label: Text(' ')),
                 ],
@@ -79,7 +79,7 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
         ),
         DataCell(Text(user.fullName.toString())),
         DataCell(Text(user.email.toString())),
-        DataCell(Text(user.phone.toString())),
+        // DataCell(Text(user.phone.toString())),
         DataCell(TextActive(status: user.status!)),
         DataCell(Row(
           children: [
@@ -244,7 +244,7 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
                               obscureText: controller.isPasswordVisible.value,
                               decoration: InputDecoration(
                                 labelText: 'Mật khẩu',
-                                border: const UnderlineInputBorder(),
+                                border: const OutlineInputBorder(),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     controller.isPasswordVisible.value
@@ -260,14 +260,12 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
                                 if (value == null || value.isEmpty) {
                                   return 'Vui lòng nhập mật khẩu';
                                 }
-                                // if (!RegExp(
-                                //         r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
-                                //     .hasMatch(value)) {
-                                //   return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
-                                // }
-                                if (value != controller.passwordText.text) {
-                                  return 'Mật khẩu không khớp';
+                                if (!RegExp(
+                                        r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
+                                    .hasMatch(value)) {
+                                  return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
                                 }
+
                                 return null;
                               },
                             ),
@@ -279,12 +277,14 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
                             left: 5.0, right: 5.0, bottom: 10.0, top: 10.0),
                         child: SizedBox(
                           child: TextFormField(
+                            controller: controller.rePasswordText,
+                            obscureText: controller.isRePasswordVisible.value,
                             decoration: InputDecoration(
                               labelText: 'Xác nhận mật khẩu',
-                              border: const UnderlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  controller.isPasswordVisible.value
+                                  controller.isRePasswordVisible.value
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                 ),
@@ -297,11 +297,7 @@ class KitchenManagerView extends GetView<KitchenManagerController> {
                               if (value == null || value.isEmpty) {
                                 return 'Vui lòng nhập mật khẩu';
                               }
-                              // if (!RegExp(
-                              //         r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
-                              //     .hasMatch(value)) {
-                              //   return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
-                              // }
+
                               if (value != controller.passwordText.text) {
                                 return 'Mật khẩu không khớp';
                               }

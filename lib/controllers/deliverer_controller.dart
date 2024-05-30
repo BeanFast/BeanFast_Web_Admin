@@ -17,9 +17,11 @@ class DelivererController extends PaginatedDataTableController<User> {
   final TextEditingController fullName = TextEditingController();
   final TextEditingController emailText = TextEditingController();
   final TextEditingController passwordText = TextEditingController();
+  final TextEditingController rePasswordText = TextEditingController();
   var selectedImageFile = Rxn<FilePickerResult>();
   var isPasswordVisible = true.obs;
   var isRePasswordVisible = true.obs;
+  
 
   Future changeActive(String id, bool isActive) async {
     try {
@@ -67,7 +69,7 @@ class DelivererController extends PaginatedDataTableController<User> {
       try {
         await UserService().create(model);
         Get.back();
-        Get.snackbar('Thành công', '');
+        Get.snackbar('Thành công', 'Đã thêm thành công');
         await fetchData();
       } on DioException catch (e) {
         Get.snackbar('Lỗi', e.response!.data['title']);

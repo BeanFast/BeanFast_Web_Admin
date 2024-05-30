@@ -17,6 +17,7 @@ class KitchenManagerController extends PaginatedDataTableController<User> {
   final TextEditingController fullName = TextEditingController();
   final TextEditingController emailText = TextEditingController();
   final TextEditingController passwordText = TextEditingController();
+  final TextEditingController rePasswordText = TextEditingController();
   var selectedImageFile = Rxn<FilePickerResult>();
   var isPasswordVisible = true.obs;
   var isRePasswordVisible = true.obs;

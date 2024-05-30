@@ -54,7 +54,7 @@ class DelivererView extends GetView<DelivererController> {
                   DataColumn(label: Text('Hình ảnh')),
                   DataColumn(label: Text('Họ và tên')),
                   DataColumn(label: Text('Email')),
-                  DataColumn(label: Text('Số điện thoại')),
+                  // DataColumn(label: Text('Số điện thoại')),
                   DataColumn(label: Text('Trạng thái')),
                   DataColumn(label: Text(' ')),
                 ],
@@ -82,7 +82,7 @@ class DelivererView extends GetView<DelivererController> {
         ),
         DataCell(Text(user.fullName.toString())),
         DataCell(Text(user.email.toString())),
-        DataCell(Text(user.phone.toString())),
+        // DataCell(Text(user.phone.toString())),
         DataCell(TextActive(status: user.status!)),
         DataCell(Row(
           children: [
@@ -143,7 +143,7 @@ class DelivererView extends GetView<DelivererController> {
   void showDialog() {
     Get.dialog(
       ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: Get.width ),
+        constraints: BoxConstraints(maxWidth: Get.width),
         child: AlertDialog(
           title: Text(
             'Thông tin tài khoản giao hàng',
@@ -247,7 +247,7 @@ class DelivererView extends GetView<DelivererController> {
                               obscureText: controller.isPasswordVisible.value,
                               decoration: InputDecoration(
                                 labelText: 'Mật khẩu',
-                                border: const UnderlineInputBorder(),
+                                border: const OutlineInputBorder(),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     controller.isPasswordVisible.value
@@ -263,14 +263,12 @@ class DelivererView extends GetView<DelivererController> {
                                 if (value == null || value.isEmpty) {
                                   return 'Vui lòng nhập mật khẩu';
                                 }
-                                // if (!RegExp(
-                                //         r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
-                                //     .hasMatch(value)) {
-                                //   return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
-                                // }
-                                if (value != controller.passwordText.text) {
-                                  return 'Mật khẩu không khớp';
+                                if (!RegExp(
+                                        r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
+                                    .hasMatch(value)) {
+                                  return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
                                 }
+
                                 return null;
                               },
                             ),
@@ -282,12 +280,14 @@ class DelivererView extends GetView<DelivererController> {
                             left: 5.0, right: 5.0, bottom: 10.0, top: 10.0),
                         child: SizedBox(
                           child: TextFormField(
+                            obscureText: controller.isRePasswordVisible.value,
+                            controller: controller.rePasswordText,
                             decoration: InputDecoration(
                               labelText: 'Xác nhận mật khẩu',
-                              border: const UnderlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  controller.isPasswordVisible.value
+                                  controller.isRePasswordVisible.value
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                 ),
@@ -300,11 +300,6 @@ class DelivererView extends GetView<DelivererController> {
                               if (value == null || value.isEmpty) {
                                 return 'Vui lòng nhập mật khẩu';
                               }
-                              // if (!RegExp(
-                              //         r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$')
-                              //     .hasMatch(value)) {
-                              //   return 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ hoa, chữ thường và số';
-                              // }
                               if (value != controller.passwordText.text) {
                                 return 'Mật khẩu không khớp';
                               }
@@ -324,10 +319,13 @@ class DelivererView extends GetView<DelivererController> {
               onPressed: () async {
                 await controller.submitForm();
               },
-              child:  Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Iconsax.add, size: 20,),
+                  const Icon(
+                    Iconsax.add,
+                    size: 20,
+                  ),
                   Text('Lưu', style: Get.textTheme.bodyMedium),
                 ],
               ),

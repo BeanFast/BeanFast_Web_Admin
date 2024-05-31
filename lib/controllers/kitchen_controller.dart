@@ -3,7 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '/models/user.dart';
 import '/models/area.dart';
+import '/services/user_service.dart';
 import '/services/area_service.dart';
 import '/services/kitchen_service.dart';
 import '/views/pages/kitchen_page.dart';
@@ -12,12 +14,14 @@ import 'paginated_data_table_controller.dart';
 
 class KitchenController extends PaginatedDataTableController<Kitchen> {
   RxList<Area> listArea = <Area>[].obs;
+  RxList<User> managerlist = <User>[].obs;
   List<Area> listInitArea = [];
   //Form
   final GlobalKey<FormState> formCreateKey = GlobalKey<FormState>();
   final TextEditingController nameText = TextEditingController();
   final TextEditingController addressText = TextEditingController();
   Rx<Area?> selectedArea = Rx<Area?>(null);
+  Rxn<User> selectedManager = Rxn<User>();
   var selectedImageFile = Rxn<FilePickerResult>();
 
   Future submitForm() async {
@@ -29,12 +33,17 @@ class KitchenController extends PaginatedDataTableController<Kitchen> {
       Get.snackbar('Thất bại', 'Chưa có thông tin khu vực');
       return;
     }
+    if (selectedManager.value == null) {
+      Get.snackbar('Thất bại', 'Chưa có thông tin người quản lý');
+      return;
+    }
     if (formCreateKey.currentState!.validate()) {
       Kitchen model = Kitchen();
       model.name = nameText.text;
       model.address = addressText.text;
       model.areaId = selectedArea.value!.id!;
       model.imageFile = selectedImageFile.value!;
+      model.managerId = selectedManager.value!.id;
       try {
         await KitchenService().create(model);
         Get.back();
@@ -89,13 +98,27 @@ class KitchenController extends PaginatedDataTableController<Kitchen> {
       var data = await AreaService().getAll();
       listInitArea = data;
       listArea.addAll(listInitArea);
-    } on DioException catch (e) {
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future getUsersNoKitchen() async {
+    managerlist.clear();
+    try {
+      var data = await UserService().getNoKitchen();
+      managerlist.value = data;
+    } catch (e) {
       throw Exception(e);
     }
   }
 
   void selectArea(Area area) {
     selectedArea.value = area;
+  }
+
+  void selectManager(User value) {
+    selectedManager.value = value;
   }
 
   @override

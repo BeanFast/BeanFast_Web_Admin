@@ -26,6 +26,7 @@ class KitchenService {
         model.imageFile!.files.single.bytes!,
         filename: 'uploadFile.jpg',
       ),
+      'managerId': model.managerId,
     });
     Response response = await _apiService.request.post(baseUrl, data: formData);
     return response.statusCode == 201;

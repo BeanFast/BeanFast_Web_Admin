@@ -49,7 +49,7 @@ class KitchenManagerController extends PaginatedDataTableController<User> {
 
   Future submitForm() async {
     Role? role =
-        listRole.firstWhereOrNull((e) => e.code == RoleState.deliverer.code);
+        listRole.firstWhereOrNull((e) => e.code == RoleState.kitchenManager.code);
     if (role == null) {
       Get.snackbar('Lỗi', 'Không có role');
       return;

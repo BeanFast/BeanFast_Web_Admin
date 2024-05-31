@@ -49,11 +49,11 @@ class KitchenView extends GetView<KitchenController> {
                 columns: <DataColumn>[
                   DataColumn(label: Text('Code')),
                   DataColumn(label: Text('Hình ảnh')),
-                  DataColumn(label: Text('Tên trường')),
+                  DataColumn(label: Text('Tên bếp')),
                   DataColumn(label: Text('Địa chỉ')),
-                  DataColumn(label: Text('Trường phụ trách')),
+                  DataColumn(label: Text('Người phụ trách')),
                   DataColumn(label: Text('Số trường')),
-                  DataColumn(label: Text(' ')),
+                  DataColumn(label: Text('')),
                 ],
               ),
             ),
@@ -66,9 +66,7 @@ class KitchenView extends GetView<KitchenController> {
   DataRow setRow(Kitchen kitchen) {
     return DataRow(
       cells: [
-        DataCell(
-          Text(kitchen.code.toString()),
-        ),
+        DataCell(Text(kitchen.code.toString())),
         DataCell(
           SizedBox(
             height: 100,
@@ -79,11 +77,9 @@ class KitchenView extends GetView<KitchenController> {
             ),
           ),
         ),
-        DataCell(
-          Text(kitchen.name.toString()),
-        ),
+        DataCell(Text(kitchen.name.toString())),
         DataCell(Text(kitchen.address.toString())),
-        DataCell(Text(kitchen.address.toString())),
+        DataCell(Text(kitchen.manager!.fullName.toString())),
         DataCell(Text(kitchen.schoolCount!.toString())),
         DataCell(Row(
           children: [
@@ -173,6 +169,26 @@ class KitchenView extends GetView<KitchenController> {
                     ),
                     GestureDetector(
                       onTap: () {
+                        showManagersDialog();
+                      },
+                      child: Card(
+                        child: ListTile(
+                          leading: const Icon(Iconsax.location),
+                          title: Text('Người quản lý',
+                              style: Get.textTheme.bodyMedium),
+                          subtitle: Obx(
+                            () => Text(
+                                controller.selectedManager.value == null
+                                    ? 'Trống'
+                                    : '${controller.selectedManager.value!.fullName}',
+                                style: Get.textTheme.bodySmall),
+                          ),
+                          trailing: const Icon(Iconsax.arrow_circle_right),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
                         showAreaDialog();
                       },
                       child: Card(
@@ -187,13 +203,7 @@ class KitchenView extends GetView<KitchenController> {
                                     : '${controller.selectedArea.value!.ward}, ${controller.selectedArea.value!.district}, ${controller.selectedArea.value!.city}',
                                 style: Get.textTheme.bodySmall),
                           ),
-                          trailing: IconButton(
-                            iconSize: 24,
-                            onPressed: () {
-                              showAreaDialog();
-                            },
-                            icon: const Icon(Iconsax.arrow_circle_right),
-                          ),
+                          trailing: const Icon(Iconsax.arrow_circle_right),
                         ),
                       ),
                     ),
@@ -297,5 +307,43 @@ class KitchenView extends GetView<KitchenController> {
         ),
       ),
     ));
+  }
+
+  void showManagersDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          'Chọn người quản lý',
+          style: Get.textTheme.titleMedium,
+        ),
+        content: LoadingView(
+          future: controller.getUsersNoKitchen,
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: Get.width * 0.8,
+              child: Obx(
+                () => Column(
+                  children: controller.managerlist.map((manager) {
+                    return Card(
+                      child: ListTile(
+                        title: Text('Tên: ${manager.fullName}',
+                            style: Get.textTheme.bodyMedium),
+                        subtitle: Text(manager.email.toString(),
+                            style: Get.textTheme.bodySmall!
+                                .copyWith(color: Colors.black54)),
+                        onTap: () {
+                          Get.back();
+                          controller.selectManager(manager);
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

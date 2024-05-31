@@ -37,8 +37,8 @@ class AuthController extends GetxController with CacheManager {
   }
 
   Future login() async {
-    emailController.text = 'admin01.beanfast@gmail.com';
-    passwordController.text = '12345678';
+    // emailController.text = 'admin01.beanfast@gmail.com';
+    // passwordController.text = '12345678';
 
     if (!formKey.currentState!.validate()) {
       Get.snackbar('Thất bại', 'Thông tin không hợp lệ');

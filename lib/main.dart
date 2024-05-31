@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'BeanFast',
+      title: 'BeanFast Admin',
       theme: AppTheme.defaulTheme,
       initialRoute: "/",
       getPages: [

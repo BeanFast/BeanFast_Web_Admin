@@ -48,7 +48,7 @@ class CustomerController extends PaginatedDataTableController<User> {
       dataList = data;
       setDataTable(dataList);
     } catch (e) {
-      throw Exception();
+      throw Exception(e);
     }
   }
 }

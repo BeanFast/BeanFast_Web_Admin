@@ -1,3 +1,4 @@
+import 'package:beanfast_admin/contains/contain.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -58,6 +59,7 @@ class AuthController extends GetxController with CacheManager {
   }
 
   void logOut() {
+    currentUser.value = null;
     changeAuthState(AuthState.unauthenticated);
     removeToken();
   }

@@ -9,7 +9,7 @@ Map<String, int> rowSize = {'5': 5, '10': 10, '15': 15, '20': 20};
 
 List<Role> listRole = [];
 Role? selectedRole;
-Rx<User> currentUser = User().obs;
+Rxn<User> currentUser = Rxn<User>();
 RxInt selectedMenuIndex = MenuIndexState.customer.index.obs;
 Rx<AuthState> authState = AuthState.unauthenticated.obs;
 

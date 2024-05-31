@@ -78,13 +78,7 @@ class CustomerView extends GetView<CustomerController> {
             ),
           ),
         ),
-        DataCell(
-          TextDataTable(
-            data: user.fullName.toString(),
-            maxLines: 2,
-            width: 200,
-          ),
-        ),
+        DataCell(Text(user.fullName.toString())),
         DataCell(Text(user.phone.toString())),
         DataCell(TextActive(status: user.status!)),
         DataCell(Row(

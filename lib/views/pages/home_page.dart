@@ -1,3 +1,4 @@
+import 'package:beanfast_admin/controllers/auth_controller.dart';
 import 'package:beanfast_admin/views/pages/loading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,15 +65,14 @@ class HomeView extends GetView<HomeController> {
                           TextButton(
                             child: const Text('Hủy'),
                             onPressed: () {
-                              Navigator.of(context).pop(
-                                  false); // Returns false when Cancel is clicked
+                              Get.back();
                             },
                           ),
                           TextButton(
                             child: const Text('Đồng ý'),
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pop(true); // Returns true when OK is clicked
+                              Get.back();
+                              Get.find<AuthController>().logOut();
                             },
                           ),
                         ],

@@ -46,4 +46,13 @@ class UserService {
     Response response = await _apiService.request.post(baseUrl, data: formData);
     return response.statusCode == 201;
   }
+
+  Future<List<User>> getNoKitchen() async {
+    final response = await _apiService.request.get('$baseUrl/kitchens');
+    List<User> list = [];
+    for (var e in response.data['data']) {
+      list.add(User.fromJson(e));
+    }
+    return list;
+  }
 }

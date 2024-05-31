@@ -37,7 +37,7 @@ class User extends BaseModel {
       id: json["id"],
       status: json['status'],
       code: json['code'],
-      fullName: json['fullName'],
+      fullName: json['fullName'] ?? '',
       phone: json['phone'],
       email: json['email'],
       avatarPath: json['avatarPath'],

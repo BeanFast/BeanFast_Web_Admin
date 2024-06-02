@@ -65,34 +65,34 @@ class LoginView extends GetView<AuthController> {
                     },
                   ),
                   const SizedBox(height: 10),
-                  TextFormField(
-                    controller: controller.passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Mật khẩu',
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          controller.isPasswordHidden.value
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                  Obx(() => TextFormField(
+                        controller: controller.passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Mật khẩu',
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordHidden.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              controller.isPasswordHidden.value =
+                                  !controller.isPasswordHidden.value;
+                            },
+                          ),
                         ),
-                        onPressed: () {
-                          controller.isPasswordHidden.value =
-                              !controller.isPasswordHidden.value;
+                        obscureText: controller.isPasswordHidden.value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập mật khẩu';
+                          }
+                          if (value.length < 8) {
+                            return 'Mật khẩu phải có ít nhất 8 ký tự';
+                          }
+                          return null;
                         },
-                      ),
-                    ),
-                    obscureText: controller.isPasswordHidden.value,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập mật khẩu';
-                      }
-                      if (value.length < 8) {
-                        return 'Mật khẩu phải có ít nhất 8 ký tự';
-                      }
-                      return null;
-                    },
-                  ),
+                      )),
                   const SizedBox(height: 20),
                   Container(
                     height: 50.0,
